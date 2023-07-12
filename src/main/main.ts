@@ -12,7 +12,6 @@ import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import { createWorker } from 'tesseract.js';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -26,24 +25,10 @@ class AppUpdater {
 
 let mainWindow: BrowserWindow | null = null;
 
-const getTextFromTesseract = async () => {
-  const image = path.join(__dirname, '../testImages/gloves.png');
-  const worker = await createWorker();
-  (async () => {
-    await worker.loadLanguage('eng');
-    await worker.initialize('eng');
-    const {
-      data: { text },
-    } = await worker.recognize(image);
-    await worker.terminate();
-    mainWindow?.webContents.send('tesseract', text);
-  })();
-};
-
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
-  getTextFromTesseract();
+  mainWindow?.webContents.send('tesseract', msgTemplate('Tesseract from main'));
 });
 
 if (process.env.NODE_ENV === 'production') {
