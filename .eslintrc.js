@@ -13,6 +13,9 @@ module.exports = {
     '@typescript-eslint/no-shadow': 'error',
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': 'error',
+    'no-console': 'off', // Disable 'no-console' rule
+    'no-whitespace-before-property': 'off', // Disable whitespace rule
+    'no-trailing-spaces': 'off', // Disable 'no-trailing-spaces' rule
   },
   parserOptions: {
     ecmaVersion: 2020,
