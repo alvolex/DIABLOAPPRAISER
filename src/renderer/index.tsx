@@ -61,33 +61,27 @@ const findItemRect = (words: Word[]) => {
 };
 
 const getTextFromTesseract = async () => {
-  const worker = await createWorker();
-  (async () => {
-    const { data } = await scheduler.addJob('recognize', image);
+  const { data } = await scheduler.addJob('recognize', image);
 
-    const words = data.words.filter((word) => word.confidence > 40);
-    const positions = findItemRect(words);
+  const words = data.words.filter((word) => word.confidence > 40);
+  const positions = findItemRect(words);
 
-    if (!positions) {
-      // eslint-disable-next-line no-alert
-      alert('Could not find item level');
-      await worker.terminate();
-      return;
-    }
+  if (!positions) {
+    // eslint-disable-next-line no-alert
+    alert('Could not find item level');
+    return;
+  }
 
-    const { x0, y0, x1, y1 } = positions;
+  const { x0, y0, x1, y1 } = positions;
 
-    const {
-      data: { text },
-    } = await scheduler.addJob('recognize', image, {
-      rectangle: { top: y0, left: x0, width: x1 - x0, height: y1 - y0 },
-    });
+  const {
+    data: { text },
+  } = await scheduler.addJob('recognize', image, {
+    rectangle: { top: y0, left: x0, width: x1 - x0, height: y1 - y0 },
+  });
 
-    await worker.terminate();
-
-    console.log(text);
-    alert(text);
-  })();
+  console.log(text);
+  alert(text);
 };
 
 // calling IPC exposed from preload script
