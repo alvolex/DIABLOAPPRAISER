@@ -28,7 +28,15 @@ let mainWindow: BrowserWindow | null = null;
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
-  mainWindow?.webContents.send('tesseract', msgTemplate('Tesseract from main'));
+
+  mainWindow?.webContents.send(
+    'ipc-example',
+    msgTemplate('Tesseract from main')
+  );
+});
+
+ipcMain.on('run-tesseract', async (event, arg) => {
+  mainWindow?.webContents.send('tesseract', arg);
 });
 
 if (process.env.NODE_ENV === 'production') {
