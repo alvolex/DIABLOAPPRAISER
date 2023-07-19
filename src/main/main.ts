@@ -84,6 +84,8 @@ const createWindow = async () => {
     show: false,
     width: 1024,
     height: 728,
+    autoHideMenuBar: true,
+    frame: false,
     icon: getAssetPath('icon.png'),
     webPreferences: {
       preload: app.isPackaged
@@ -135,30 +137,58 @@ app.on('window-all-closed', () => {
   }
 });
 
+type Pos = {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+};
+
+let lastPos: Pos = {
+  left: 0,
+  top: 0,
+  right: 0,
+  bottom: 0,
+};
+
+const positionOverlay = () => {
+  setInterval(() => {
+    const windowPos = getWindowPositionByName('Spotify Premium');
+    if (!windowPos) {
+      mainWindow?.hide();
+      return;
+    }
+
+    if (
+      lastPos.left === windowPos.left &&
+      lastPos.top === windowPos.top &&
+      lastPos.right === windowPos.right &&
+      lastPos.bottom === windowPos.bottom
+    ) {
+      return;
+    }
+
+    lastPos = windowPos;
+    mainWindow?.show();
+
+    const windowHeight = windowPos.bottom - windowPos.top;
+    const windowWidth = windowPos.right - windowPos.left;
+
+    mainWindow?.setPosition(windowPos.left, windowPos.top);
+    mainWindow?.setSize(windowWidth, windowHeight);
+
+    // these should be set in the constructor
+    mainWindow?.setOpacity(0.5);
+    mainWindow?.setAlwaysOnTop(true, 'floating');
+    mainWindow?.setIgnoreMouseEvents(true, { forward: true });
+  }, 10);
+};
+
 app
   .whenReady()
   .then(() => {
     createWindow();
-    setInterval(() => {
-      const windowPos = getWindowPositionByName('ADON');
-      if (!windowPos) {
-        mainWindow?.hide();
-        return;
-      }
-
-      mainWindow?.show();
-
-      const windowHeight = windowPos.bottom - windowPos.top;
-      const windowWidth = windowPos.right - windowPos.left;
-
-      mainWindow?.setPosition(windowPos.left, windowPos.top);
-      mainWindow?.setSize(windowWidth, windowHeight);
-
-      // these should be set in the constructor
-      mainWindow?.setOpacity(0.5);
-      mainWindow?.setAlwaysOnTop(true, 'floating');
-      mainWindow?.setIgnoreMouseEvents(true, { forward: true });
-    }, 150);
+    positionOverlay();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
