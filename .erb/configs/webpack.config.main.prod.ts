@@ -78,6 +78,14 @@ const configuration: webpack.Configuration = {
     __dirname: false,
     __filename: false,
   },
+  module: {
+    rules: [
+      {
+        test: /\.node$/,
+        use: 'node-loader',
+      },
+    ],
+  },
 };
 
 export default merge(baseConfig, configuration);

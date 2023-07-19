@@ -12,11 +12,11 @@ import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import { getWindowPositionByName } from '../CustomAddons/GetWindowPosition';
+
+// import { getWindowPositionByName } from '../CustomAddons/GetWindowPosition';
+import { getWindowPositionByName } from 'CustomAddons/GetWindowPosition.node';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-
-// const myAddon = require('../CustomAddons/GetWindowPosition');
 
 class AppUpdater {
   constructor() {
