@@ -16,7 +16,7 @@ import { getWindowPositionByName } from '../CustomAddons/GetWindowPosition';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
-const myAddon = require('../CustomAddons/GetWindowPosition');
+// const myAddon = require('../CustomAddons/GetWindowPosition');
 
 class AppUpdater {
   constructor() {
@@ -140,9 +140,25 @@ app
   .then(() => {
     createWindow();
     setInterval(() => {
-      // console.log(getWindowPositionByName('Spotify Premium'));
-      console.log(myAddon.getWindowPositionByName('Spotify Premium'));
-    }, 300);
+      const windowPos = getWindowPositionByName('ADON');
+      if (!windowPos) {
+        mainWindow?.hide();
+        return;
+      }
+
+      mainWindow?.show();
+
+      const windowHeight = windowPos.bottom - windowPos.top;
+      const windowWidth = windowPos.right - windowPos.left;
+
+      mainWindow?.setPosition(windowPos.left, windowPos.top);
+      mainWindow?.setSize(windowWidth, windowHeight);
+
+      // these should be set in the constructor
+      mainWindow?.setOpacity(0.5);
+      mainWindow?.setAlwaysOnTop(true, 'floating');
+      mainWindow?.setIgnoreMouseEvents(true, { forward: true });
+    }, 150);
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
