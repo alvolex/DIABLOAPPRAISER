@@ -12,8 +12,11 @@ import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import { getWindowPositionByName } from '../CustomAddons/GetWindowPosition';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+
+const myAddon = require('../CustomAddons/GetWindowPosition');
 
 class AppUpdater {
   constructor() {
@@ -136,6 +139,10 @@ app
   .whenReady()
   .then(() => {
     createWindow();
+    setInterval(() => {
+      // console.log(getWindowPositionByName('Spotify Premium'));
+      console.log(myAddon.getWindowPositionByName('Spotify Premium'));
+    }, 300);
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
