@@ -15,6 +15,6 @@
     "link-modules": "node -r ts-node/register ../../.erb/scripts/link-modules.ts"
   },
   "dependencies": {
-    "get-window-position": "file:../../../adon"
+    "get-window-position": "^1.0.0"
   }
 }
