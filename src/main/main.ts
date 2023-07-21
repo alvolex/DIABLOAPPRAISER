@@ -179,9 +179,9 @@ const positionOverlay = () => {
     mainWindow?.setSize(windowWidth, windowHeight);
 
     // these should be set in the constructor
-    mainWindow?.setOpacity(0.5);
+    //mainWindow?.setOpacity(0.5);
     mainWindow?.setAlwaysOnTop(true, 'floating');
-    mainWindow?.setIgnoreMouseEvents(true, { forward: true });
+    //mainWindow?.setIgnoreMouseEvents(true, { forward: true });
   }, 10);
 };
 

@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client';
 import { Word, createWorker, createScheduler } from 'tesseract.js';
 import App from './App';
 import image from '../testImages/unique.jpg';
+import React from 'react';
 
 const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
