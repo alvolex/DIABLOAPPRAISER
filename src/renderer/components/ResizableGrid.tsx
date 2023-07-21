@@ -7,13 +7,13 @@ interface Props {
 }
 
 const ResizableGrid: React.FC<Props> = ({ gridCols, gridRows }) => {
-  const grid = Array(gridRows).fill(Array(gridCols).fill(0));
+  const grid: any[][] = Array(gridRows).fill(Array(gridCols).fill(0));
 
   return (
     <div className="grid-container">
       {grid.map((row, idx) => (
         <div key={idx.toString()} className="grid-row" style={{height: (100/gridRows) + '%'}}>
-          {row.map((col: any, idx2: any) => (
+          {row.map((col, idx2) => (
             <div key={idx2.toString()} className="grid-cell" />
           ))}
         </div>
