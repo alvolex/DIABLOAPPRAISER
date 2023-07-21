@@ -13,8 +13,9 @@ import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 
-import { getWindowPositionByName } from '../CustomAddons/GetWindowPosition';
+// import { getWindowPositionByName } from '../CustomAddons/GetWindowPosition';
 // import { getWindowPositionByName } from 'CustomAddons/GetWindowPosition.node'; // ! UNCOMMENT THIS FOR BUILD TO WORK
+import { getWindowPositionByName } from 'get-window-position'; // use the two above if you don't have access to the native module
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
