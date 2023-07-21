@@ -10,13 +10,17 @@ const sendIpc = () => {
   );
 };
 
+const gridMouseOverCallback = (row: any, col: number) => {
+  console.log(`row: ${row}, col: ${col}`);
+}
+
 const App = () => {
   return (
     <div>
       <button type="button" onClick={sendIpc}>
         Send ipc
       </button>
-      <ResizableGrid gridCols={11} gridRows={3} />
+      <ResizableGrid gridCols={11} gridRows={3} callback={gridMouseOverCallback} />
     </div>
   );
 
