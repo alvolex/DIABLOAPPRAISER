@@ -10,8 +10,17 @@ const sendIpc = () => {
   );
 };
 
+const screenShotIpc = (row: number, col: number) => {
+  window.electron.ipcRenderer.sendMessage(
+    'take-screenshot',
+    'Started from app.tsx',
+    {row, col}
+  );
+}
+
 const gridMouseOverCallback = (row: any, col: number) => {
   console.log(`row: ${row}, col: ${col}`);
+  screenShotIpc(row, col);
 }
 
 const App = () => {

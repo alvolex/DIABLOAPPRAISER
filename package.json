@@ -102,6 +102,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.11.2",
+    "screenshot-desktop": "^1.15.0",
     "tesseract.js": "^4.1.1"
   },
   "devDependencies": {
@@ -117,6 +118,7 @@
     "@types/react": "^18.2.8",
     "@types/react-dom": "^18.2.4",
     "@types/react-test-renderer": "^18.0.0",
+    "@types/screenshot-desktop": "^1.12.0",
     "@types/terser-webpack-plugin": "^5.0.4",
     "@types/webpack-bundle-analyzer": "^4.6.0",
     "@typescript-eslint/eslint-plugin": "^5.59.8",

@@ -40,12 +40,14 @@ const findItemRect = (words: Word[]) => {
 
   let hasStart = false;
   const foundPositions = words.some((word, idx) => {
+    //Get top position of the item
     if (!hasStart && (word.text === 'Legendary' || word.text === 'Rare')) {
       x0 = word.bbox.x0;
       y0 = word.bbox.y0 - 5;
       hasStart = true;
     }
 
+    //Get bottom position of the item
     if (
       hasStart &&
       word.text === 'Requires' &&
@@ -64,7 +66,7 @@ const findItemRect = (words: Word[]) => {
 const getTextFromTesseract = async () => {
   const { data } = await scheduler.addJob('recognize', image);
 
-  const words = data.words.filter((word) => word.confidence > 40);
+  const words = data.words.filter((word) => word.confidence > 40); //remove low confidence words
   const positions = findItemRect(words);
 
   if (!positions) {

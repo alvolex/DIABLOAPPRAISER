@@ -20,6 +20,11 @@
     width: 100%;
 }
 
+/* grid cell hover effect */
+.grid-cell:hover {
+    background-color: #e6e6e6;
+}
+
 .grid-container{
     position: relative;
     resize: both;

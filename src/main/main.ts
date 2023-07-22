@@ -9,13 +9,14 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, desktopCapturer } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 
 // import { getWindowPositionByName } from '../CustomAddons/GetWindowPosition';
 // import { getWindowPositionByName } from 'CustomAddons/GetWindowPosition.node'; // ! UNCOMMENT THIS FOR BUILD TO WORK
 import { getWindowPositionByName } from 'get-window-position'; // use the two above if you don't have access to the native module
+import screenshot from 'screenshot-desktop';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -29,6 +30,7 @@ class AppUpdater {
 
 let mainWindow: BrowserWindow | null = null;
 
+/* IPCS */
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
@@ -43,6 +45,15 @@ ipcMain.on('run-tesseract', async (event, arg) => {
   mainWindow?.webContents.send('tesseract', arg);
 });
 
+ipcMain.on('take-screenshot', async (event, arg, cords) => {
+  //mainWindow?.webContents.send('take-screenshot', arg);
+  //Screenshot and save to ../screenshots
+  screenshot({ filename: path.join(__dirname, `../screenshots/row-${cords.row} col-${cords.col}.png`) }).then((img) => {
+    console.log(img);
+  });
+});
+
+/* Initialization */
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
@@ -138,6 +149,8 @@ app.on('window-all-closed', () => {
   }
 });
 
+
+//Handle overlay positioning
 type Pos = {
   left: number;
   top: number;
@@ -145,14 +158,14 @@ type Pos = {
   bottom: number;
 };
 
-let lastPos: Pos = {
-  left: 0,
-  top: 0,
-  right: 0,
-  bottom: 0,
-};
-
 const positionOverlay = () => {
+  let lastPos: Pos = {
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
+  };
+
   setInterval(() => {
     const windowPos = getWindowPositionByName('Spotify Premium');
     if (!windowPos) {
@@ -185,6 +198,8 @@ const positionOverlay = () => {
   }, 10);
 };
 
+
+// Create main BrowserWindow when electron is ready
 app
   .whenReady()
   .then(() => {
