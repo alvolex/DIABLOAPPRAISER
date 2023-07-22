@@ -17,6 +17,8 @@ import log from 'electron-log';
 // import { getWindowPositionByName } from 'CustomAddons/GetWindowPosition.node'; // ! UNCOMMENT THIS FOR BUILD TO WORK
 import { getWindowPositionByName } from 'get-window-position'; // use the two above if you don't have access to the native module
 import screenshot from 'screenshot-desktop';
+import sharp from 'sharp';
+import fs from 'fs';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -29,6 +31,21 @@ class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
+
+type Pos = {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+};
+
+//Used for overlay positioning and cropping screenshots
+let lastPos: Pos = {
+  left: 0,
+  top: 0,
+  right: 0,
+  bottom: 0,
+};
 
 /* IPCS */
 ipcMain.on('ipc-example', async (event, arg) => {
@@ -45,11 +62,41 @@ ipcMain.on('run-tesseract', async (event, arg) => {
   mainWindow?.webContents.send('tesseract', arg);
 });
 
-ipcMain.on('take-screenshot', async (event, arg, cords) => {
+ipcMain.on('take-screenshot', async (event, arg, cords, mousePos) => {
   //mainWindow?.webContents.send('take-screenshot', arg);
-  //Screenshot and save to ../screenshots
-  screenshot({ filename: path.join(__dirname, `../screenshots/row-${cords.row} col-${cords.col}.png`) }).then((img) => {
+  const filePath = {
+    filename: path.join(
+      __dirname,
+      `../screenshots/tmp-row-${cords.row} col-${cords.col}.png`
+    ),
+  };
+  const filePathCropped = path.join(
+    __dirname,
+    `../screenshots/row-${cords.row} col-${cords.col}.png`
+  );
+
+  let width = 500;
+  let height = 1000;
+
+  screenshot(filePath).then((img) => {
     console.log(img);
+    sharp(img)
+      .extract({
+        left: lastPos.left + mousePos.x - width / 2,
+        top: lastPos.top + mousePos.y - height / 2,
+        width,
+        height,
+      })
+      .grayscale()
+      .toFile(filePathCropped)
+      .then(() => {
+        fs.unlink(filePath.filename, (err) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+        });
+      });
   });
 });
 
@@ -98,6 +145,8 @@ const createWindow = async () => {
     height: 728,
     autoHideMenuBar: true,
     frame: false,
+    transparent: true,
+    
     icon: getAssetPath('icon.png'),
     webPreferences: {
       preload: app.isPackaged
@@ -149,23 +198,8 @@ app.on('window-all-closed', () => {
   }
 });
 
-
 //Handle overlay positioning
-type Pos = {
-  left: number;
-  top: number;
-  right: number;
-  bottom: number;
-};
-
 const positionOverlay = () => {
-  let lastPos: Pos = {
-    left: 0,
-    top: 0,
-    right: 0,
-    bottom: 0,
-  };
-
   setInterval(() => {
     const windowPos = getWindowPositionByName('Spotify Premium');
     if (!windowPos) {
@@ -197,7 +231,6 @@ const positionOverlay = () => {
     //mainWindow?.setIgnoreMouseEvents(true, { forward: true });
   }, 10);
 };
-
 
 // Create main BrowserWindow when electron is ready
 app

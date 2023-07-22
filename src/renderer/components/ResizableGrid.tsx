@@ -16,7 +16,7 @@ const ResizableGrid: React.FC<GridProps> = ({ gridCols, gridRows, callback }) =>
       {grid.map((row, idx) => (
         <div key={idx.toString()} className="grid-row" style={{height: (100/gridRows) + '%'}}>
           {row.map((col, idx2) => (
-            callback ? <div key={idx2.toString()} className="grid-cell" onMouseEnter={() => callback(idx, idx2)}/> : <div key={idx2.toString()} className="grid-cell"/>
+            callback ? <div key={idx2.toString()} className="grid-cell" onMouseEnter={(e) => callback(idx, idx2, e)}/> : <div key={idx2.toString()} className="grid-cell"/>
           ))}
         </div>
       ))}

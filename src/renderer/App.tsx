@@ -10,18 +10,36 @@ const sendIpc = () => {
   );
 };
 
-const screenShotIpc = (row: number, col: number) => {
+const screenShotIpc = (
+  row: number,
+  col: number,
+  mousePos: {
+    x: number;
+    y: number;
+  }
+) => {
   window.electron.ipcRenderer.sendMessage(
     'take-screenshot',
     'Started from app.tsx',
-    {row, col}
+    { row, col },
+    mousePos
   );
-}
+};
 
-const gridMouseOverCallback = (row: any, col: number) => {
+const gridMouseOverCallback = (
+  row: any,
+  col: number,
+  event: React.MouseEvent<HTMLDivElement, MouseEvent>
+) => {
   console.log(`row: ${row}, col: ${col}`);
-  screenShotIpc(row, col);
-}
+
+  const mousePos = {
+    x: event.clientX,
+    y: event.clientY,
+  };
+
+  screenShotIpc(row, col, mousePos);
+};
 
 const App = () => {
   return (
@@ -29,7 +47,11 @@ const App = () => {
       <button type="button" onClick={sendIpc}>
         Send ipc
       </button>
-      <ResizableGrid gridCols={11} gridRows={3} callback={gridMouseOverCallback} />
+      <ResizableGrid
+        gridCols={11}
+        gridRows={3}
+        callback={gridMouseOverCallback}
+      />
     </div>
   );
 
@@ -40,6 +62,6 @@ const App = () => {
       </Routes>
     </Router>
   ); */
-}
+};
 
 export default App;
