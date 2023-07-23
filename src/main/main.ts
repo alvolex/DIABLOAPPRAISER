@@ -184,7 +184,7 @@ const createWindow = async () => {
     transparent: true,
     icon: getAssetPath('icon.png'),
     webPreferences: {
-      //devTools: false,
+      devTools: false,
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),

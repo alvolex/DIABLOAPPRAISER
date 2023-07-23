@@ -10,7 +10,6 @@ export interface GridProps {
   callback?: (...args: any) => any;
 }
 
-//todo: add the name to the movable names so that several grids can be moved independently
 const ResizableGrid: React.FC<GridProps> = ({
   gridCols,
   gridRows,
@@ -59,7 +58,6 @@ const ResizableGrid: React.FC<GridProps> = ({
   }, [gridContainerWidth]);
 
   useEffect(() => {
-    console.log(firstRender)
     if (editMode === false && firstRender === false) {
       //get grid-container size and save to localsoage
       const gridContainer = document.querySelector(

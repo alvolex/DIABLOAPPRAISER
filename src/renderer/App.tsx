@@ -73,8 +73,7 @@ const App = () => {
       >
         Run Tesseract
       </button>
-      {/* todo move movableGrid logic into the resizablegrid */}
-
+      
       <ResizableGrid
         gridCols={11}
         gridRows={3}
