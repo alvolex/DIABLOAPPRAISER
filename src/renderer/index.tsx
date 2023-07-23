@@ -35,12 +35,10 @@ const findItemRect = (words: Word[]) => {
   let x1 = 0;
   let y1 = 0;
 
-  console.log(words);
-
   let hasStart = false;
   const foundPositions = words.some((word, idx) => {
     //Get top position of the item
-    if (!hasStart && (word.text === 'Legendary' || word.text === 'Rare')) {
+    if (!hasStart && (word.text.includes('Legendary') || word.text.includes('Rare') || word.text.includes('Magic') || word.text.includes('Unique') || word.text.includes('Devious') || word.text.includes('Gem'))) {
       x0 = word.bbox.x0;
       y0 = word.bbox.y0 - 5;
       hasStart = true;
@@ -54,6 +52,7 @@ const findItemRect = (words: Word[]) => {
     ) {
       x1 = words[idx + 1].bbox.x1 + 30;
       y1 = words[idx + 1].bbox.y1 + 5;
+
       return true;
     }
     return false;
@@ -65,7 +64,8 @@ const findItemRect = (words: Word[]) => {
 export const getTextFromTesseract = async (image: string) => {
   const { data } = await scheduler.addJob('recognize', image);
 
-  const words = data.words.filter((word) => word.confidence > 40); //remove low confidence words
+  let words = data.words.filter((word) => word.confidence > 40); //remove low confidence words
+  words = words.filter((word) => word.text.length > 1); //remove single character words
   const positions = findItemRect(words);
 
   if (!positions) {
@@ -83,15 +83,8 @@ export const getTextFromTesseract = async (image: string) => {
   });
 
   console.log(text);
-  alert(text);
+  //alert(text);
 };
-
-// calling IPC exposed from preload script
-window.electron.ipcRenderer.once('ipc-example', (arg) => {
-  // eslint-disable-next-line no-console
-  console.log(arg);
-});
-window.electron.ipcRenderer.sendMessage('ipc-example', ['ping']);
 
 window.electron.ipcRenderer.on('tesseract', (image) => {
   getTextFromTesseract(image as string);

@@ -13,9 +13,7 @@ import { app, BrowserWindow, shell, ipcMain, desktopCapturer } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 
-// import { getWindowPositionByName } from '../CustomAddons/GetWindowPosition';
-// import { getWindowPositionByName } from 'CustomAddons/GetWindowPosition.node'; // ! UNCOMMENT THIS FOR BUILD TO WORK
-import { getWindowPositionByName } from 'get-window-position'; // use the two above if you don't have access to the native module
+import { getWindowPositionByName } from 'get-window-position'; 
 import screenshot from 'screenshot-desktop';
 import sharp from 'sharp';
 import fs from 'fs';
@@ -88,6 +86,7 @@ ipcMain.on('take-screenshot', async (event, arg, cords, mousePos) => {
     return;
   }
 
+  //Hack so that the clickthrough (ignoreMouseEvents) works correctly with hover effects and doesnt trigger multiple onMouseEnter events
   setTimeout(() => {
     mainWindow?.setIgnoreMouseEvents(false, { forward: true });
   }, 100);
@@ -96,27 +95,29 @@ ipcMain.on('take-screenshot', async (event, arg, cords, mousePos) => {
   }, 150);
 
   let screenShotsPath = app.isPackaged ? path.join(process.resourcesPath, 'assets/screenshots/') : path.join(__dirname, '../../assets/screenshots/');
-
-  const filePath = {
-    filename: screenShotsPath + `/tmp-row-${cords.row} col-${cords.col}.png`,
-  };
-
+  const filePath = { filename: screenShotsPath + `/tmp-row-${cords.row} col-${cords.col}.png`};
   const filePathCropped = screenShotsPath + `/row-${cords.row} col-${cords.col}.png`;
 
-  let width = 500;
-  let height = 1000;
-
+  //Size and bounds for cropping the screenshot
+  let width = 1200;
+  let height = 1400;
   let top = lastPos.top + mousePos.y - height / 2;
+  let left = lastPos.left + mousePos.x - width / 2;
   if(top + height > lastPos.bottom) {
     top = lastPos.bottom - height;
   }
   top = top < 0 ? 0 : top;
-  console.log(top);
+  if(left + width > lastPos.right) {
+    left = lastPos.right - width;
+  }
+  left = left < 0 ? 0 : left;
 
-  screenshot(filePath).then((img) => {
+  //Small timeout so weapon gets shown
+  setTimeout(() => {
+    screenshot(filePath).then((img) => {
     sharp(img)
       .extract({
-        left: lastPos.left + mousePos.x - width / 2,
+        left: left,
         top: top,
         width,
         height,
@@ -132,6 +133,7 @@ ipcMain.on('take-screenshot', async (event, arg, cords, mousePos) => {
         });
       });
   });
+  }, 100);
 });
 
 /* Initialization */

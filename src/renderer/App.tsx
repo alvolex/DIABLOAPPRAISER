@@ -2,28 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import ResizableGrid from './components/ResizableGrid';
-import { getTextFromTesseract } from 'renderer';
-
-const sendIpc = () => {
-  /* window.electron.ipcRenderer.sendMessage(
-    'ipc-example',
-    'Started from app.tsx'
-  ); */
-
-  window.electron.ipcRenderer.sendMessage(
-    'toggle-clickthrough',
-    'Started from app.tsx',
-    null
-  );
-};
-
-const runTesseractIpc = (image: string) => {
-  window.electron.ipcRenderer.sendMessage(
-    'run-tesseract',
-    'Started from app.tsx',
-    image
-  );
-};
 
 const toggleClickthroughIpc = (bool: boolean) => {
   window.electron.ipcRenderer.sendMessage(
@@ -53,52 +31,28 @@ const gridMouseOverCallback = (
 };
 
 const App = () => {
-  //todo ! refactor moveable grid
-  const [dragging, setDragging] = useState(false);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [editMode, setEditMode] = useState(false);
+  const [counter, setCounter] = useState(0);
 
-  const handleMouseDown = (e: any) => {
-    if (e.target.classList.contains('moveHandle')) {
-      e.preventDefault();
-      setDragging(true);
-      setOffset({
-        x: e.clientX - e.target.getBoundingClientRect().left,
-        y: e.clientY - e.target.getBoundingClientRect().top,
-      });
-    }
+  const runTesseractIpc = (image: string) => {
+    window.electron.ipcRenderer.sendMessage(
+      'run-tesseract',
+      'Started from app.tsx',
+      image
+    );
+
+    setCounter(counter + 1); //just for debugging tesseract with multiple images
   };
 
-  const handleMouseMove = (e: any) => {
-    if (dragging) {
-      e.preventDefault();
-      const x = e.clientX - offset.x;
-      const y = e.clientY - offset.y;
-      const movableGrid = document.querySelector('.movableGrid') as HTMLElement;
-      if (movableGrid) {
-        movableGrid.style.left = x + 'px';
-        movableGrid.style.top = y + 'px';
-      }
-    }
+  const sendIpc = () => {
+    window.electron.ipcRenderer.sendMessage(
+      'toggle-clickthrough',
+      'Started from app.tsx',
+      null
+    );
+
+    setEditMode(!editMode);
   };
-
-  const handleMouseUp = () => {
-    setDragging(false);
-  };
-
-  useEffect(() => {
-    if (dragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-    } else {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    }
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [dragging]);
 
   return (
     <div>
@@ -113,17 +67,21 @@ const App = () => {
         Toggle edit mode
       </button>
       {/* //todo call runTesseractIpc when the screenshot is taken instead */}
-      <button type="button" onClick={() => runTesseractIpc('row-2 col-10.png')}>
+      <button
+        type="button"
+        onClick={() => runTesseractIpc('row-0 col-' + counter + '.png')}
+      >
         Run Tesseract
       </button>
-      <div className="movableGrid" onMouseDown={handleMouseDown}>
-        <div className="moveHandle"></div>
-        <ResizableGrid
-          gridCols={11}
-          gridRows={3}
-          callback={gridMouseOverCallback}
-        />
-      </div>
+      {/* todo move movableGrid logic into the resizablegrid */}
+
+      <ResizableGrid
+        gridCols={11}
+        gridRows={3}
+        callback={gridMouseOverCallback}
+        editMode={editMode}
+        name="Inventory"
+      />
     </div>
   );
 
