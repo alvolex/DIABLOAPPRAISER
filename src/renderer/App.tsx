@@ -112,7 +112,7 @@ const App = () => {
       >
         Toggle edit mode
       </button>
-      //todo call runTesseractIpc when the screenshot is taken instead
+      {/* //todo call runTesseractIpc when the screenshot is taken instead */}
       <button type="button" onClick={() => runTesseractIpc('row-2 col-10.png')}>
         Run Tesseract
       </button>

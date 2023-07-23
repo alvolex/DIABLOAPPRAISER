@@ -103,7 +103,6 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.11.2",
     "screenshot-desktop": "^1.15.0",
-    "sharp": "^0.32.4",
     "tesseract.js": "^4.1.1"
   },
   "devDependencies": {

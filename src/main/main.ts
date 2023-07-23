@@ -77,7 +77,9 @@ ipcMain.on('toggle-clickthrough', async (event, arg, isHovering) => {
 
 //get the screenshot from the screenshot folder and send it to the renderer
 ipcMain.on('run-tesseract', async (event, arg, imageName) => {
-  const image = fs.readFileSync(path.join(__dirname, '../screenshots/' + imageName));
+  let screenShotsPath = app.isPackaged ? path.join(process.resourcesPath, 'assets/screenshots/') : path.join(__dirname, '../../assets/screenshots/');
+
+  const image = fs.readFileSync(screenShotsPath + imageName);
   event.reply('tesseract', image);
 });
 
@@ -93,16 +95,13 @@ ipcMain.on('take-screenshot', async (event, arg, cords, mousePos) => {
     mainWindow?.setIgnoreMouseEvents(true, { forward: true });
   }, 150);
 
+  let screenShotsPath = app.isPackaged ? path.join(process.resourcesPath, 'assets/screenshots/') : path.join(__dirname, '../../assets/screenshots/');
+
   const filePath = {
-    filename: path.join(
-      __dirname,
-      `../screenshots/tmp-row-${cords.row} col-${cords.col}.png`
-    ),
+    filename: screenShotsPath + `/tmp-row-${cords.row} col-${cords.col}.png`,
   };
-  const filePathCropped = path.join(
-    __dirname,
-    `../screenshots/row-${cords.row} col-${cords.col}.png`
-  );
+
+  const filePathCropped = screenShotsPath + `/row-${cords.row} col-${cords.col}.png`;
 
   let width = 500;
   let height = 1000;
