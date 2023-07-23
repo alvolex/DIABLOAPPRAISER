@@ -22,6 +22,7 @@ const ResizableGrid: React.FC<GridProps> = ({
   const [gridContainerHeight, setGridContainerHeight] = useState<string | null>( null);
   const [dragging, setDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [lastEventTime, setLastEventTime] = useState(0); //throttle mousemove event
   const grid: any[][] = Array(gridRows).fill(Array(gridCols).fill(0));
 
   useEffect(() => {
@@ -126,6 +127,16 @@ const ResizableGrid: React.FC<GridProps> = ({
     }
   });
 
+  const throttledCallback = (idx: number, idx2: number, e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const currentTime = Date.now();
+    if (currentTime - lastEventTime >= 200) {
+      if (callback) {
+        callback(idx, idx2, e, name);
+      }
+      setLastEventTime(currentTime);
+    }
+  };
+
   return (
     <div className={"movableGrid " + name} onMouseDown={handleMouseDown}>
       <div className={"moveHandle " + name} style={{ opacity: editMode ? 1 : 0 }}>
@@ -143,7 +154,7 @@ const ResizableGrid: React.FC<GridProps> = ({
                 <div
                   key={idx2.toString()}
                   className="grid-cell"
-                  onMouseEnter={(e) => callback(idx, idx2, e)}
+                  onMouseEnter={(e) => !editMode && throttledCallback(idx, idx2, e)}
                 />
               ) : (
                 <div key={idx2.toString()} className="grid-cell" />

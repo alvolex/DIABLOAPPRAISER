@@ -14,7 +14,8 @@ const toggleClickthroughIpc = (bool: boolean) => {
 const gridMouseOverCallback = (
   row: any,
   col: number,
-  event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  name: string
 ) => {
   const mousePos = {
     x: event.clientX,
@@ -26,7 +27,8 @@ const gridMouseOverCallback = (
     'take-screenshot',
     'Started from app.tsx',
     { row, col },
-    mousePos
+    mousePos,
+    name
   );
 };
 

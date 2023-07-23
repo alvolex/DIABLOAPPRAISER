@@ -81,7 +81,7 @@ ipcMain.on('run-tesseract', async (event, arg, imageName) => {
   event.reply('tesseract', image);
 });
 
-ipcMain.on('take-screenshot', async (event, arg, cords, mousePos) => {
+ipcMain.on('take-screenshot', async (event, arg, cords, mousePos, name) => {
   if (inEditMode) {
     return;
   }
@@ -95,8 +95,8 @@ ipcMain.on('take-screenshot', async (event, arg, cords, mousePos) => {
   }, 150);
 
   let screenShotsPath = app.isPackaged ? path.join(process.resourcesPath, 'assets/screenshots/') : path.join(__dirname, '../../assets/screenshots/');
-  const filePath = { filename: screenShotsPath + `/tmp-row-${cords.row} col-${cords.col}.png`};
-  const filePathCropped = screenShotsPath + `/row-${cords.row} col-${cords.col}.png`;
+  const filePath = { filename: screenShotsPath + `/${name} tmp-row-${cords.row} col-${cords.col}.png`};
+  const filePathCropped = screenShotsPath + `/${name} row-${cords.row} col-${cords.col}.png`;
 
   //Size and bounds for cropping the screenshot
   let width = 1200;
@@ -184,7 +184,7 @@ const createWindow = async () => {
     transparent: true,
     icon: getAssetPath('icon.png'),
     webPreferences: {
-      devTools: false,
+      //devTools: false,
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
