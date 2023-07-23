@@ -18,6 +18,8 @@
     border: 1px solid black;
     height: 100%;
     width: 100%;
+    min-height: 10px;
+    min-width: 10px;
 }
 
 /* grid cell hover effect */

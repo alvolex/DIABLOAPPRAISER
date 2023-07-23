@@ -2,7 +2,7 @@
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
-export type Channels = 'ipc-example' | 'tesseract' | 'run-tesseract' | 'take-screenshot';
+export type Channels = 'ipc-example' | 'tesseract' | 'run-tesseract' | 'take-screenshot' | 'toggle-clickthrough';
 
 const electronHandler = {
   ipcRenderer: {

@@ -1,7 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import { Word, createWorker, createScheduler } from 'tesseract.js';
 import App from './App';
-import image from '../testImages/unique.jpg';
 import React from 'react';
 
 const container = document.getElementById('root') as HTMLElement;
@@ -63,7 +62,7 @@ const findItemRect = (words: Word[]) => {
   return foundPositions ? { x0, y0, x1, y1 } : null;
 };
 
-const getTextFromTesseract = async () => {
+export const getTextFromTesseract = async (image: string) => {
   const { data } = await scheduler.addJob('recognize', image);
 
   const words = data.words.filter((word) => word.confidence > 40); //remove low confidence words
@@ -94,9 +93,6 @@ window.electron.ipcRenderer.once('ipc-example', (arg) => {
 });
 window.electron.ipcRenderer.sendMessage('ipc-example', ['ping']);
 
-window.electron.ipcRenderer.on('tesseract', (arg) => {
-  // eslint-disable-next-line no-console
-  console.log(arg);
-
-  getTextFromTesseract();
+window.electron.ipcRenderer.on('tesseract', (image) => {
+  getTextFromTesseract(image as string);
 });

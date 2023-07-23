@@ -58,12 +58,41 @@ ipcMain.on('ipc-example', async (event, arg) => {
   );
 });
 
-ipcMain.on('run-tesseract', async (event, arg) => {
-  mainWindow?.webContents.send('tesseract', arg);
+let inEditMode = false;
+ipcMain.on('toggle-clickthrough', async (event, arg, isHovering) => {
+  let buttonClicked = isHovering === null;
+
+  if (inEditMode && !buttonClicked) {
+    return;
+  }
+
+  if (buttonClicked) {
+    mainWindow?.setIgnoreMouseEvents(inEditMode, { forward: inEditMode });
+    inEditMode = !inEditMode;
+    return;
+  }
+
+  mainWindow?.setIgnoreMouseEvents(isHovering, { forward: isHovering });
+});
+
+//get the screenshot from the screenshot folder and send it to the renderer
+ipcMain.on('run-tesseract', async (event, arg, imageName) => {
+  const image = fs.readFileSync(path.join(__dirname, '../screenshots/' + imageName));
+  event.reply('tesseract', image);
 });
 
 ipcMain.on('take-screenshot', async (event, arg, cords, mousePos) => {
-  //mainWindow?.webContents.send('take-screenshot', arg);
+  if (inEditMode) {
+    return;
+  }
+
+  setTimeout(() => {
+    mainWindow?.setIgnoreMouseEvents(false, { forward: true });
+  }, 100);
+  setTimeout(() => {
+    mainWindow?.setIgnoreMouseEvents(true, { forward: true });
+  }, 150);
+
   const filePath = {
     filename: path.join(
       __dirname,
@@ -78,12 +107,18 @@ ipcMain.on('take-screenshot', async (event, arg, cords, mousePos) => {
   let width = 500;
   let height = 1000;
 
+  let top = lastPos.top + mousePos.y - height / 2;
+  if(top + height > lastPos.bottom) {
+    top = lastPos.bottom - height;
+  }
+  top = top < 0 ? 0 : top;
+  console.log(top);
+
   screenshot(filePath).then((img) => {
-    console.log(img);
     sharp(img)
       .extract({
         left: lastPos.left + mousePos.x - width / 2,
-        top: lastPos.top + mousePos.y - height / 2,
+        top: top,
         width,
         height,
       })
@@ -146,9 +181,9 @@ const createWindow = async () => {
     autoHideMenuBar: true,
     frame: false,
     transparent: true,
-    
     icon: getAssetPath('icon.png'),
     webPreferences: {
+      //devTools: false,
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
@@ -156,6 +191,8 @@ const createWindow = async () => {
   });
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));
+  mainWindow?.setAlwaysOnTop(true, 'floating');
+  mainWindow?.setIgnoreMouseEvents(true, { forward: true });
 
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
@@ -224,11 +261,6 @@ const positionOverlay = () => {
 
     mainWindow?.setPosition(windowPos.left, windowPos.top);
     mainWindow?.setSize(windowWidth, windowHeight);
-
-    // these should be set in the constructor
-    //mainWindow?.setOpacity(0.5);
-    mainWindow?.setAlwaysOnTop(true, 'floating');
-    //mainWindow?.setIgnoreMouseEvents(true, { forward: true });
   }, 10);
 };
 
