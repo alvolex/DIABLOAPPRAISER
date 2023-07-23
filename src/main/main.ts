@@ -236,6 +236,10 @@ app.on('window-all-closed', () => {
   }
 });
 
+process.on('exit', () => {
+  app.quit();
+});
+
 //Handle overlay positioning
 const positionOverlay = () => {
   setInterval(() => {

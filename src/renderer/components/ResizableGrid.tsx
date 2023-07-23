@@ -47,7 +47,7 @@ const ResizableGrid: React.FC<GridProps> = ({
     if (editMode === false && firstRender === true) {
       //get grid-container size from localstorage and set it
       const gridContainer = document.querySelector(
-        '.grid-container'
+        '.grid-container.' + name
       ) as HTMLElement;
 
       if (gridContainerWidth && gridContainerHeight) {
@@ -63,7 +63,7 @@ const ResizableGrid: React.FC<GridProps> = ({
     if (editMode === false && firstRender === false) {
       //get grid-container size and save to localsoage
       const gridContainer = document.querySelector(
-        '.grid-container'
+        '.grid-container.' + name
       ) as HTMLElement;
 
       localStorage.setItem(`gridContainerWidth${name}`, gridContainer.offsetWidth.toString());
@@ -73,7 +73,7 @@ const ResizableGrid: React.FC<GridProps> = ({
 
   //Make draggable
   const handleMouseDown = (e: any) => {
-    if (e.target.classList.contains('moveHandle')) {
+    if (e.target.classList.contains('moveHandle') && (e.target.classList.contains(name))) {
       e.preventDefault();
       setDragging(true);
       setOffset({
@@ -83,7 +83,7 @@ const ResizableGrid: React.FC<GridProps> = ({
     }
   };
 
-  const movableGrid = document.querySelector('.movableGrid') as HTMLElement;
+  const movableGrid = document.querySelector('.movableGrid.' + name) as HTMLElement;
   const handleMouseMove = (e: any) => {
     if (dragging) {
       e.preventDefault();
@@ -100,7 +100,7 @@ const ResizableGrid: React.FC<GridProps> = ({
 
     const x = parseInt(movableGrid.style.left);
     const y = parseInt(movableGrid.style.top);
-    localStorage.setItem('movableGrid', JSON.stringify({ x, y }));
+    localStorage.setItem('movableGrid' + name, JSON.stringify({ x, y }));
   };
 
   useEffect(() => {
@@ -119,8 +119,8 @@ const ResizableGrid: React.FC<GridProps> = ({
   }, [dragging]);
 
   useEffect(() => {
-    const movableGrid = document.querySelector('.movableGrid') as HTMLElement;
-    const movableGridPosition = localStorage.getItem('movableGrid');
+    const movableGrid = document.querySelector('.movableGrid.'+name) as HTMLElement;
+    const movableGridPosition = localStorage.getItem('movableGrid'+name);
     if (movableGrid && movableGridPosition) {
       const { x, y } = JSON.parse(movableGridPosition);
       movableGrid.style.left = x + 'px';
@@ -129,11 +129,11 @@ const ResizableGrid: React.FC<GridProps> = ({
   });
 
   return (
-    <div className="movableGrid" onMouseDown={handleMouseDown}>
-      <div className="moveHandle" style={{ opacity: editMode ? 1 : 0 }}>
+    <div className={"movableGrid " + name} onMouseDown={handleMouseDown}>
+      <div className={"moveHandle " + name} style={{ opacity: editMode ? 1 : 0 }}>
         {name}
       </div>
-      <div className="grid-container" style={{ opacity: editMode ? 1 : 0 }}>
+      <div className={"grid-container " + name} style={{ opacity: editMode ? 1 : 0 }}>
         {grid.map((row, idx) => (
           <div
             key={idx.toString()}

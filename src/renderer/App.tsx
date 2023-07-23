@@ -82,6 +82,22 @@ const App = () => {
         editMode={editMode}
         name="Inventory"
       />
+
+      <ResizableGrid
+        gridCols={4}
+        gridRows={1}
+        callback={gridMouseOverCallback}
+        editMode={editMode}
+        name="StashSlot"
+      />
+
+      <ResizableGrid
+        gridCols={11}
+        gridRows={9}
+        callback={gridMouseOverCallback}
+        editMode={editMode}
+        name="StashTab"
+      />
     </div>
   );
 
