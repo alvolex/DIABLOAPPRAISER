@@ -184,7 +184,7 @@ const createWindow = async () => {
     transparent: true,
     icon: getAssetPath('icon.png'),
     webPreferences: {
-      //devTools: false,
+      devTools: false,
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
@@ -243,7 +243,7 @@ process.on('exit', () => {
 //Handle overlay positioning
 const positionOverlay = () => {
   setInterval(() => {
-    const windowPos = getWindowPositionByName('Spotify Premium');
+    const windowPos = getWindowPositionByName('Untitled - Notepad');
     if (!windowPos) {
       mainWindow?.hide();
       return;
@@ -266,7 +266,7 @@ const positionOverlay = () => {
 
     mainWindow?.setPosition(windowPos.left, windowPos.top);
     mainWindow?.setSize(windowWidth, windowHeight);
-  }, 10);
+  }, 1000);
 };
 
 // Create main BrowserWindow when electron is ready
